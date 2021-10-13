@@ -339,19 +339,20 @@ class WorksheetReader(object):
     Create a parser and apply it to a workbook
     """
 
-    def __init__(self, ws, xml_source, shared_strings, data_only):
+    def __init__(self, ws, xml_source, shared_strings, data_only, ignore_styles):
         self.ws = ws
         self.parser = WorkSheetParser(xml_source, shared_strings,
                 data_only, ws.parent.epoch, ws.parent._date_formats,
                 ws.parent._timedelta_formats)
+        self.ignore_styles = ignore_styles
         self.tables = []
-
 
     def bind_cells(self):
         for idx, row in self.parser.parse():
             for cell in row:
-                style = self.ws.parent._cell_styles[cell['style_id']]
-                c = Cell(self.ws, row=cell['row'], column=cell['column'], style_array=style)
+                if not self.ignore_styles:
+                    style = self.ws.parent._cell_styles[cell['style_id']]
+                c = Cell(self.ws, row=cell['row'], column=cell['column'])
                 c._value = cell['value']
                 c.data_type = cell['data_type']
                 self.ws._cells[(cell['row'], cell['column'])] = c
