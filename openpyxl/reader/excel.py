@@ -120,14 +120,13 @@ class ExcelReader:
     """
 
     def __init__(self,  fn, read_only=False, keep_vba=KEEP_VBA,
-                  data_only=False, keep_links=True, ignore_styles=False):
+                  data_only=False, keep_links=True):
         self.archive = _validate_archive(fn)
         self.valid_files = self.archive.namelist()
         self.read_only = read_only
         self.keep_vba = keep_vba
         self.data_only = data_only
         self.keep_links = keep_links
-        self.ignore_styles = ignore_styles
         self.shared_strings = []
 
 
@@ -225,7 +224,7 @@ class ExcelReader:
                 fh = self.archive.open(rel.target)
                 ws = self.wb.create_sheet(sheet.name)
                 ws._rels = rels
-                ws_parser = WorksheetReader(ws, fh, self.shared_strings, self.data_only, self.ignore_styles)
+                ws_parser = WorksheetReader(ws, fh, self.shared_strings, self.data_only)
                 ws_parser.bind_all()
 
             # assign any comments to cells
@@ -279,8 +278,7 @@ class ExcelReader:
         self.read_workbook()
         self.read_properties()
         self.read_theme()
-        if not self.ignore_styles:
-            apply_stylesheet(self.archive, self.wb)
+        # apply_stylesheet(self.archive, self.wb)
         self.read_worksheets()
         self.parser.assign_names()
         if not self.read_only:
@@ -288,7 +286,7 @@ class ExcelReader:
 
 
 def load_workbook(filename, read_only=False, keep_vba=KEEP_VBA,
-                  data_only=False, keep_links=True, ignore_styles=False):
+                  data_only=False, keep_links=True):
     """Open the given filename and return the workbook
 
     :param filename: the path to open or a file-like object
@@ -306,9 +304,6 @@ def load_workbook(filename, read_only=False, keep_vba=KEEP_VBA,
     :param keep_links: whether links to external workbooks should be preserved. The default is True
     :type keep_links: bool
 
-    :param keep_links: whether to ignore all styling & formatting. The default is True
-    :type keep_links: bool
-
     :rtype: :class:`openpyxl.workbook.Workbook`
 
     .. note::
@@ -318,6 +313,6 @@ def load_workbook(filename, read_only=False, keep_vba=KEEP_VBA,
 
     """
     reader = ExcelReader(filename, read_only, keep_vba,
-                        data_only, keep_links, ignore_styles)
+                        data_only, keep_links)
     reader.read()
     return reader.wb
