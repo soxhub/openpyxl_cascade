@@ -346,11 +346,12 @@ class WorksheetReader(object):
                 ws.parent._timedelta_formats)
         self.tables = []
 
+
     def bind_cells(self):
         for idx, row in self.parser.parse():
             for cell in row:
-                # style = self.ws.parent._cell_styles[cell['style_id']]
-                c = Cell(self.ws, row=cell['row'], column=cell['column'])
+                style = self.ws.parent._cell_styles[cell['style_id']]
+                c = Cell(self.ws, row=cell['row'], column=cell['column'], style_array=style)
                 c._value = cell['value']
                 c.data_type = cell['data_type']
                 self.ws._cells[(cell['row'], cell['column'])] = c

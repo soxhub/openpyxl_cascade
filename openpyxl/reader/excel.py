@@ -278,7 +278,7 @@ class ExcelReader:
         self.read_workbook()
         self.read_properties()
         self.read_theme()
-        # apply_stylesheet(self.archive, self.wb)
+        apply_stylesheet(self.archive, self.wb)
         self.read_worksheets()
         self.parser.assign_names()
         if not self.read_only:
